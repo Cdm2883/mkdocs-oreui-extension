@@ -1,0 +1,7 @@
+site_name: OreUi with MkDocs
+
+theme:
+  name: material
+
+plugins:
+  - oreui-extension

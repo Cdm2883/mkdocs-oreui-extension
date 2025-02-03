@@ -31,7 +31,7 @@ setup(
     ],
     entry_points={
         'mkdocs.plugins': [
-            'oreui = mkdocs_oreui_extension.plugin:OreUiExtension',
+            'oreui-extension = mkdocs_oreui_extension.plugin:OreUiExtension',
         ]
     },
     include_package_data=True,
