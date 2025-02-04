@@ -1,0 +1,26 @@
+name: Publish docs via GitHub Pages
+
+on:
+    push:
+
+jobs:
+  build:
+    name: Deploy docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v1
+
+      - name: Install pip dependencies
+        run: |
+            pip install mkdocs-material[recommended]
+            pip install .
+
+      - name: Build docs
+        run: mkdocs build
+
+      - name: Deploy docs to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
