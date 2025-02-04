@@ -13,8 +13,8 @@ jobs:
 
       - name: Install pip dependencies
         run: |
-            pip install mkdocs-material[recommended]
-            pip install .
+          pip install mkdocs-material[recommended]
+          pip install .
 
       - name: Build docs
         run: mkdocs build
