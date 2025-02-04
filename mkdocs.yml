@@ -2,6 +2,18 @@ site_name: OreUi with MkDocs
 
 theme:
   name: material
+  palette:
+    - scheme: mk-ore
+      primary: green
+      accent: green
+      toggle:
+        icon: material/brightness-7
+        name: Switch to OreUi
+    - scheme: slate
+      primary: black
+      toggle:
+        icon: material/brightness-4
+        name: Switch to Material2
 
 plugins:
   - oreui-extension:
