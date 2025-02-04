@@ -1,29 +1,50 @@
 import os
-from typing import Any, Dict
 from mkdocs.config import config_options
+from mkdocs.config.base import Config as BaseConfig
 from mkdocs.plugins import BasePlugin
-from mkdocs.utils import copy_file, write_file
+from mkdocs.commands.serve import LiveReloadServer
+from mkdocs.utils import write_file
 import sass
 
-css_min_paths = ['stylesheets', 'index.min.css']
+OUTPUT_CSS_PATHS = ["assets", "stylesheets", "oreui.min.css"]
 
-class OreUiExtension(BasePlugin):
-    def on_config(self, config: config_options.Config, **kwargs) -> Dict[str, Any]:
-        config['extra_css'] = ['/'.join(css_min_paths)] + config['extra_css']
+
+class ExtensionConfig(BaseConfig):
+    internal_dev_watchdog = config_options.Type(str, default='')
+
+
+class OreUiExtension(BasePlugin[ExtensionConfig]):
+    resolve_assets_root: str
+    resolve_site_root: str
+
+    def on_config(self, config: BaseConfig, **kwargs) -> BaseConfig:
+        self.resolve_assets_root = (
+            os.path.join(os.path.dirname(config['config_file_path']), self.config.internal_dev_watchdog)
+            if self.config.internal_dev_watchdog
+            else os.path.dirname(os.path.abspath(__file__))
+        )
+        self.resolve_site_root = config['site_dir']
+        config["extra_css"] = ['/'.join(OUTPUT_CSS_PATHS)] + config['extra_css']
         return config
 
-    def on_post_build(self, config: Dict[str, Any], **kwargs) -> None:
-        src_path = resolve_path(*css_min_paths)
-        dest_path = os.path.join(config["site_dir"], *css_min_paths)
-        if not os.path.exists(src_path): compile_scss()
-        copy_file(src_path, dest_path)
+    def on_post_build(self, config, **kwargs) -> None:
+        css_path = self.resolve_site(*OUTPUT_CSS_PATHS)
+        if not os.path.exists(css_path): self.compile_scss()
 
-def compile_scss():
-    sass_input = resolve_path('stylesheets', 'index.scss')
-    css_output = resolve_path(*css_min_paths)
+    def on_serve(self, server: LiveReloadServer, config, **kwargs):
+        if not self.config.internal_dev_watchdog: return
+        scss_paths = self.resolve_assets('stylesheets')
+        server.watch(scss_paths, self.compile_scss)
 
-    compiled_css = sass.compile(filename=sass_input, output_style='compressed'),
-    write_file(compiled_css.encode('utf-8'), css_output)
+    def compile_scss(self):
+        sass_input = self.resolve_assets('stylesheets', 'index.scss')
+        css_output = self.resolve_site(*OUTPUT_CSS_PATHS)
 
-def resolve_path(*paths: str):
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), *paths)
+        compiled_css = sass.compile(filename=sass_input, output_style='compressed')
+        write_file(compiled_css.encode('utf-8'), css_output)
+
+    def resolve_assets(self, *paths: str):
+        return os.path.join(self.resolve_assets_root, *paths)
+
+    def resolve_site(self, *paths: str):
+        return os.path.join(self.resolve_site_root, *paths)

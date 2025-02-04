@@ -4,4 +4,5 @@ theme:
   name: material
 
 plugins:
-  - oreui-extension
+  - oreui-extension:
+      internal_dev_watchdog: 'mkdocs_oreui_extension'
