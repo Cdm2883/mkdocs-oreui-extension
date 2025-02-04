@@ -1,7 +1,8 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+### IntelliJ IDEs ###
+.idea/modules
+.idea/modules.xml
+.idea/*.iml
+.idea/misc.xml
 
 # Distribution / packaging
 .Python
@@ -22,10 +23,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
 
 # Environments
 .env
