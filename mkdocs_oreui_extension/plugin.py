@@ -48,9 +48,11 @@ class OreUiExtension(BasePlugin[ExtensionConfig]):
         self.output_css()
 
     def compile_scss(self):
+        is_in_serve_dev = self.config.internal_dev_watchdog and self.is_serve_mode
         sass_input = self.resolve_assets('stylesheets', 'index.scss')
-        self.css_compiled = sass.compile(filename=sass_input, output_style='compressed').encode('utf-8')
-        if self.config.internal_dev_watchdog and self.is_serve_mode: return
+        output_style = 'nested' if is_in_serve_dev else 'compressed'
+        self.css_compiled = sass.compile(filename=sass_input, output_style=output_style).encode('utf-8')
+        if is_in_serve_dev: return
         file_hash = hashlib.md5(self.css_compiled).hexdigest()[:8]
         self.css_compiled_paths = OUTPUT_CSS_PATHS[:-1] + [OUTPUT_CSS_PATHS[-1] + '.' + file_hash + '.min.css']
 
