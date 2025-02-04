@@ -1,5 +1,5 @@
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 def read(name):
     with open(os.path.join(os.path.dirname(__file__), name), encoding='utf-8') as file:
@@ -14,6 +14,7 @@ setup(
     author='Cdm2883',
     author_email='hi@cdms.vip',
     url='https://github.com/Cdm2883/mkdocs-oreui-extension',
+    packages=find_packages(include=['mkdocs_oreui_extension', 'mkdocs_oreui_extension.*']),
     license="Apache-2.0",
     keywords=[
         'mkdocs',
