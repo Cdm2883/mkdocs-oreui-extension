@@ -19,7 +19,10 @@ class OreUiExtension(BasePlugin[ExtensionConfig]):
     resolve_site_root: str
     css_compiled_paths = OUTPUT_CSS_PATHS[:-1] + [OUTPUT_CSS_PATHS[-1] + '.min.css']
     css_compiled: str
-    is_serve_mode = False
+    is_serve_mode: bool
+
+    def on_startup(self, command: str, **kwargs):
+        self.is_serve_mode = command == 'serve'
 
     def on_config(self, config: BaseConfig, **kwargs) -> BaseConfig:
         self.resolve_assets_root = (
@@ -36,7 +39,6 @@ class OreUiExtension(BasePlugin[ExtensionConfig]):
         self.output_css()
 
     def on_serve(self, server: LiveReloadServer, config, **kwargs):
-        self.is_serve_mode = True
         if not self.config.internal_dev_watchdog: return
         scss_paths = self.resolve_assets('stylesheets')
         server.watch(scss_paths, self.internal_dev_watchdog)
