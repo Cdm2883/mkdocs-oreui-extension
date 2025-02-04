@@ -1,0 +1,24 @@
+name: Build a preview package
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Install pip dependencies
+        run: |
+          pip install build twine
+
+      - name: Build package
+        run: python -m build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-packages
+          path: dist/
